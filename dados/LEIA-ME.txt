@@ -1,0 +1,38 @@
+ROTEIRO 3 - ATAQUES DE INFERENCIA A MODELOS
+
+CENARIO
+  Um banco digital expoe um modelo de risco de login via API interna. Dada uma
+  sessao (sinais comportamentais e contextuais), o modelo responde se ela e
+  fraude (1) ou legitima (0). Voce esta no papel de um atacante/auditor que so
+  tem acesso de consulta ao modelo e a alguns registros, e quer descobrir o que
+  o modelo vaza sobre os dados com que foi treinado.
+
+ARQUIVOS
+  alvo.joblib            Modelo-alvo ja treinado (RandomForest do sklearn).
+                         Carregue com joblib.load. Use .predict e .predict_proba
+                         como se fosse a API.
+  membros.csv.gz         Registros que ESTAVAM no conjunto de treino do alvo.
+  nao_membros.csv.gz     Registros que NAO estavam no treino.
+  pool_consultas.csv.gz  Registros SEM a coluna de rotulo, para o ataque de
+                         extracao (voce so pode consultar o alvo).
+
+DICIONARIO DE DADOS (colunas de entrada do modelo)
+  hora                 Hora do dia da sessao (0 a 23).
+  geo_dist_km          Distancia da localizacao habitual do cliente, em km.
+  disp_idade_dias      Idade do dispositivo usado, em dias.
+  num_tentativas_1h    Tentativas de login na ultima hora.
+  vel_digitacao        Velocidade de digitacao, em caracteres por segundo.
+  rep_asn              Reputacao do provedor de rede (0 ruim, 1 boa).
+  vpn                  1 se a sessao usa VPN/proxy, 0 caso contrario.
+  novo_pais            1 se e um pais nunca visto para o cliente, 0 caso contrario.
+  score_comportamento  Score comportamental agregado (0 a 100).
+  valor_sessao         Valor financeiro movimentado na sessao, em reais.
+  conta_premium        1 se o cliente tem conta premium, 0 caso contrario.
+                       ** ATRIBUTO SENSIVEL ** (alvo do ataque de inferencia de atributo).
+  fraude               Rotulo: 1 fraude, 0 legitima. (ausente no pool de consultas)
+
+OBSERVACOES
+  - O modelo foi treinado exatamente sobre as linhas de membros.csv.gz.
+  - Nao altere nem retreine o alvo nos itens de ataque; ele representa o modelo
+    que ja esta em producao.
+  - Bibliotecas: scikit-learn e Adversarial Robustness Toolbox (ART).
